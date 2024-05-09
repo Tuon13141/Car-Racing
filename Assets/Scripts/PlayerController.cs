@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 0;
     public float rotationSpeed;
     public Vector3 moveDirection;
-    private bool moveOpposite = false;
 
     [SerializeField]
     private float slowDownSpeed;
@@ -143,6 +142,8 @@ public class PlayerController : MonoBehaviour
 
             RotateObjectToPoint(listPosition[currentIndex].position);
         }
+
+        moveDirection = Vector3.forward;
     }
 
     void ManualMode()
@@ -159,7 +160,22 @@ public class PlayerController : MonoBehaviour
                 moveDirection = inputDirection;
                 if(moveSpeed < normalMoveSpeed)
                 {
-                    moveSpeed = Increase(moveSpeed, normalMoveSpeed, speedUpSpeed);
+                    if (Input.GetKey(KeyCode.Space))
+                    {
+                        if (moveSpeed <= normalMoveSpeed && moveSpeed >= slowMoveSpeed)
+                        {
+                            moveSpeed = Decrease(moveSpeed, slowMoveSpeed, slowDownSpeed * 1.2f);
+                        }
+                        else if (moveSpeed < slowMoveSpeed)
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        moveSpeed = Increase(moveSpeed, normalMoveSpeed, speedUpSpeed);
+                    }
+                    
                 }             
                 if(rotationSpeed < manualMaxRotationSpeed)
                 {
@@ -168,33 +184,28 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (!moveOpposite)
+                if (moveSpeed > 0)
                 {
-                    moveOpposite = true;
-                }
-                if (moveSpeed > 0 && moveOpposite)
-                {
-                    moveSpeed = Decrease(moveSpeed, 0, slowDownSpeed);
+                    if (Input.GetKey(KeyCode.Space))
+                    {
+                        moveSpeed = Decrease(moveSpeed, 0, slowDownSpeed * 2);
+                    }
+                    else
+                    {
+                        moveSpeed = Decrease(moveSpeed, 0, slowDownSpeed);
+                    }
                     if (rotationSpeed > manualMinRotationSpeed)
                     {
                         rotationSpeed = Decrease(rotationSpeed, manualMinRotationSpeed, manualRotationIncreaseOrDecreaseSpeed);
                     }
                     if (moveSpeed == 0)
                     {
-                        moveOpposite = false;
                         moveDirection = inputDirection;
                     }
                 }
-                else if (moveSpeed < normalMoveSpeed && !moveOpposite)
-                {
-                    moveDirection = inputDirection;
-                    moveSpeed = Increase(moveSpeed, normalMoveSpeed, speedUpSpeed);
-                    if (rotationSpeed < manualMaxRotationSpeed)
-                    {
-                        rotationSpeed = Increase(rotationSpeed, manualMaxRotationSpeed, manualRotationIncreaseOrDecreaseSpeed);
-                    }
-                }
+                
             }
+
         }
         else
         {
@@ -210,12 +221,10 @@ public class PlayerController : MonoBehaviour
             {
                 moveDirection = Vector3.zero;
             }
+
         }
 
-        if (Input.GetKey(KeyCode.Space))
-        {
-            moveSpeed = Decrease(moveSpeed, slowMoveSpeed, slowDownSpeed * 1.2f);
-        }
+       
 
         if (moveSpeed == 0)
         {
