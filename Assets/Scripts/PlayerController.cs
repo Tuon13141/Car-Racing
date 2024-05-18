@@ -32,10 +32,15 @@ public class PlayerController : MonoBehaviour
     private float manualRotationIncreaseOrDecreaseSpeed;
     [SerializeField]
     private DriveMode driveMode = DriveMode.automatic;
-    
+
+    Rigidbody rb;
+    [SerializeField]
+    PlayerStat playerStat;
     void Start()
     {
         StartCoroutine(ChangePosition());
+        rb = GetComponent<Rigidbody>();
+        this.transform.rotation = Quaternion.Euler(0, 0, 0);
         //moveSpeed = normalMoveSpeed;
     }
 
@@ -241,10 +246,13 @@ public class PlayerController : MonoBehaviour
             {
                 transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
             }
+
+            playerStat.fuel -= rotationSpeed / 100 * Time.deltaTime;
         }
 
 
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+        //rb.velocity = moveDirection * moveSpeed;
     }
 }
 
